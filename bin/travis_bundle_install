@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require 'travis_bundle_cache/cache'
+
+TravisBundleCache::Cache.new.install
+
+exit 0
