@@ -14,9 +14,9 @@ module TravisBundleCache
     end
 
     def install
-      `cd ~ && wget -O "remote_#{@file_name}" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}" && tar -xf "remote_#{@file_name}"`
-      `cd ~ && wget -O "remote_#{@file_name}.sha2" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}.sha2"`
-      `bundle install --without #{ENV['BUNDLE_WITHOUT'] || "development production"} --path=~/.bundle`
+      run_command %(cd ~ && wget -O "remote_#{@file_name}" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}" && tar -xf "remote_#{@file_name}")
+      run_command %(cd ~ && wget -O "remote_#{@file_name}.sha2" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}.sha2")
+      run_command %(bundle install --without #{ENV['BUNDLE_WITHOUT'] || "development production"} --path=~/.bundle)
     end
 
     def cache_bundle
@@ -81,6 +81,16 @@ module TravisBundleCache
     end
 
     protected
+
+    def run_command(cmd)
+      puts "Running: #{cmd}"
+      IO.popen(cmd) do |f|
+        begin
+          print f.readchar while true
+        rescue EOFError
+        end
+      end
+    end
 
     def storage
       @storage ||= Fog::Storage.new({
