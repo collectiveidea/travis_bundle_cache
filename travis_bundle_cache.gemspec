@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["David Genord II"]
   spec.email         = ["david@collectiveidea.com"]
   spec.description   = %q{Cache the gem bundle for speedy travis builds}
+  spec.summary       = %q{Cache the gem bundle for speedy travis builds}
   spec.homepage      = "https://github.com/collectiveidea/travis_bundle_cache"
   spec.license       = "MIT"
 
