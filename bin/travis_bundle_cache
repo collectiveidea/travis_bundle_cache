@@ -3,6 +3,6 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'travis_bundle_cache/cache'
 
-TravisBundleCache::Cache.new.cache
+TravisBundleCache::Cache.new.cache_bundle
 
 exit 0
