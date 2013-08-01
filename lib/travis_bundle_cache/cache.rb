@@ -38,6 +38,9 @@ module TravisBundleCache
         puts "=> There were changes, uploading a new version of the archive"
         puts "  => Old checksum: #{@old_digest}"
         puts "  => New checksum: #{@bundle_digest}"
+
+        puts "=> Cleaning old gem versions from the bundle"
+        run_command "bundle clean"
       end
 
       puts "=> Preparing bundle archive"
