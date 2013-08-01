@@ -4,7 +4,14 @@ Travis Bundle Cache
 [![Code Climate](https://codeclimate.com/github/collectiveidea/travis_bundle_cache.png)](https://codeclimate.com/github/collectiveidea/travis_bundle_cache)
 [![Dependency Status](https://gemnasium.com/collectiveidea/travis_bundle_cache.png)](https://gemnasium.com/collectiveidea/travis_bundle_cache)
 
-Cache the gem bundle for speedy travis builds
+The primary purpose of this gem is to make [this](http://randomerrata.com/post/45827813818/travis-s3) easier and slightly more maintainable.
+
+This gem loads, builds, and saves a cache of your bundled gems on S3 by *ONLY* modifying your project's .travis.yml file.
+
+What you will need:
+* A project on Travis CI
+* An AWS account
+* A "bundle install" that takes longer than "gem install nokogiri"
 
 Usage
 =====
