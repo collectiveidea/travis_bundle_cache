@@ -33,8 +33,11 @@ Usage
 
     install: travis_bundle_install
 
+    before_script:
+    - "travis_bundle_cache > ~/travis_bundle_cache.log &"
+
     after_script:
-    - travis_bundle_cache
+    - wait && cat ~/travis_bundle_cache.log
     ```
 
 3. Install the travis gem (not the travis_bundle_cache gem)
