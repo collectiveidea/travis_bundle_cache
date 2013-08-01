@@ -24,7 +24,11 @@ module TravisBundleCache
       @bundle_digest = Digest::SHA2.file(@lock_file).hexdigest
       @old_digest    = File.exists?(@old_digest_filename) ? File.read(@old_digest_filename) : ""
 
-      if @bundle_digest == @old_digest
+      if ENV['TRAVIS_PULL_REQUEST'].to_i > 0
+        puts "=> This is a pull request, doing nothing"
+      elsif ENV['TRAVIS_BRANCH'] != "master"
+        puts "=> This is not the master branch, doing nothing"
+      elsif @bundle_digest == @old_digest
         puts "=> There were no changes, doing nothing"
       else
         archive_and_upload_bundle
