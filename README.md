@@ -1,12 +1,13 @@
-# TravisBundleCache
-
+Travis Bundle Cache
+===================
 [![Gem Version](https://badge.fury.io/rb/travis_bundle_cache.png)](http://badge.fury.io/rb/travis_bundle_cache)
 [![Code Climate](https://codeclimate.com/github/collectiveidea/travis_bundle_cache.png)](https://codeclimate.com/github/collectiveidea/travis_bundle_cache)
 [![Dependency Status](https://gemnasium.com/collectiveidea/travis_bundle_cache.png)](https://gemnasium.com/collectiveidea/travis_bundle_cache)
 
 Cache the gem bundle for speedy travis builds
 
-## Usage
+Usage
+=====
 
 1. Set up a bucket on S3 in the US Standard region (us-east-1) (and possibly a new user via IAM)
 
@@ -49,7 +50,8 @@ Cache the gem bundle for speedy travis builds
 
 Enjoy faster builds
 
-## Contributions
+Contributions
+=============
 
 TravisBundleCache is open source and contributions from the community are encouraged! No contribution is too small. Please consider:
 
@@ -66,6 +68,7 @@ For the best chance of having your changes merged, please:
 3. Commit your changes and tests (if applicable (they're applicable)).
 4. Submit a pull request with a thorough explanation and at least one animated GIF.
 
-## Thanks
+Thanks
+======
 
 Most of the credit for this gem goes to Random Errata and [this](http://randomerrata.com/post/45827813818/travis-s3) blog post
