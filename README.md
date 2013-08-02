@@ -1,7 +1,9 @@
 Travis Bundle Cache
 ===================
 [![Gem Version](https://badge.fury.io/rb/travis_bundle_cache.png)](http://badge.fury.io/rb/travis_bundle_cache)
+[![Build Status](https://travis-ci.org/collectiveidea/travis_bundle_cache.png?branch=master)](https://travis-ci.org/collectiveidea/travis_bundle_cache)
 [![Code Climate](https://codeclimate.com/github/collectiveidea/travis_bundle_cache.png)](https://codeclimate.com/github/collectiveidea/travis_bundle_cache)
+[![Coverage Status](https://coveralls.io/repos/collectiveidea/travis_bundle_cache/badge.png?branch=master)](https://coveralls.io/r/collectiveidea/travis_bundle_cache?branch=master)
 [![Dependency Status](https://gemnasium.com/collectiveidea/travis_bundle_cache.png)](https://gemnasium.com/collectiveidea/travis_bundle_cache)
 
 The primary purpose of this gem is to make [this](http://randomerrata.com/post/45827813818/travis-s3) easier and slightly more maintainable.

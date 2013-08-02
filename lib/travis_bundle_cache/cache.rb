@@ -48,7 +48,7 @@ module TravisBundleCache
       end
 
       puts "=> Preparing bundle archive"
-      `cd ~ && tar -cjf "#{@file_name}" .bundle`
+      run_command %(cd ~ && tar -cjf "#{@file_name}" .bundle)
 
       puts "=> Uploading the bundle"
       storage[@file_name].write(Pathname.new(@file_path), :reduced_redundancy => true)
