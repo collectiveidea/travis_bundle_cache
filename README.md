@@ -23,8 +23,8 @@ Usage
     ```yaml
     env:
       global:
-      - BUNDLE_ARCHIVE="your-bundle-name"
-      - AWS_S3_REGION="us-east-1"
+      - BUNDLE_ARCHIVE="your-bundle-name" # Default: "owner_name-repo_name"
+      - AWS_S3_REGION="us-east-1"         # Default: "us-east-1" (recommended)
       - AWS_S3_BUCKET="your-bucket-name"
 
     before_install:

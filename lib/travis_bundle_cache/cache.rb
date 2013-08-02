@@ -4,9 +4,9 @@ require "aws/s3"
 module TravisBundleCache
   class Cache
     def initialize
-      @bucket_name         = ENV["AWS_S3_BUCKET"]
       @architecture        = `uname -m`.strip
-      @file_name           = "#{ENV['BUNDLE_ARCHIVE']}-#{@architecture}.tgz"
+      @bundle_archive      = ENV['BUNDLE_ARCHIVE'] || ENV['TRAVIS_REPO_SLUG'].gsub(/\//, '-')
+      @file_name           = "#{@bundle_archive}-#{@architecture}.tgz"
       @file_path           = File.expand_path("~/#{@file_name}")
       @lock_file           = File.join(File.expand_path(ENV["TRAVIS_BUILD_DIR"]), "Gemfile.lock")
       @digest_filename     = "#{@file_name}.sha2"
@@ -76,7 +76,7 @@ module TravisBundleCache
         :access_key_id     => ENV["AWS_S3_KEY"],
         :secret_access_key => ENV["AWS_S3_SECRET"],
         :region            => ENV["AWS_S3_REGION"] || "us-east-1"
-      }).buckets[@bucket_name].objects
+      }).buckets[ENV["AWS_S3_BUCKET"]].objects
     end
   end
 end
