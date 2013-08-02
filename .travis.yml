@@ -2,4 +2,6 @@ language: ruby
 rvm:
 - 2.0.0
 - 1.9.3
+before_script:
+- "cd ~ && gem cert --build test@example.com && cp gem-public_cert.pem $TRAVIS_BUILD_DIR/"
 script: rspec
