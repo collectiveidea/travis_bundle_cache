@@ -31,7 +31,13 @@ Usage
 
     before_install:
     - 'echo ''gem: --no-ri --no-rdoc'' > ~/.gemrc'
-    - gem install travis_bundle_cache
+    # Better security (If only we could get Amazon to sign their gem)
+    - wget https://raw.github.com/collectiveidea/travis_bundle_cache/4753620b8f2bcfd0c5af85ccd68888c1f593a023/gem-public_cert.pem
+    - gem cert --add gem-public_cert.pem
+    - gem install aws-sdk
+    - gem install travis_bundle_cache -P HighSecurity
+    # Low security option
+    # - gem install travis_bundle_cache
 
     install: travis_bundle_install
 
