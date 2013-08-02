@@ -19,6 +19,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.executables   = ["travis_bundle_cache", "travis_bundle_install"]
 
+  spec.signing_key   = File.expand_path("~/.gemcert/gem-private_key.pem")
+  spec.cert_chain    = ['gem-public_cert.pem']
+
   spec.add_dependency "bundler", "~> 1.3"
   spec.add_dependency "aws-sdk"
 end
