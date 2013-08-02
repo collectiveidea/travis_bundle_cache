@@ -4,5 +4,6 @@ rvm:
 - 1.9.3
 before_install:
 - "mkdir ~/.gemcert && cd ~/.gemcert && gem cert --build test@example.com && cp gem-public_cert.pem $TRAVIS_BUILD_DIR/"
+- "cd $TRAVIS_BUILD_DIR"
 install: bundle install
 script: rspec
