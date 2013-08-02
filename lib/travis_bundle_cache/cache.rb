@@ -14,8 +14,8 @@ module TravisBundleCache
     end
 
     def install
-      run_command %(cd ~ && wget -O "remote_#{@file_name}" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}" && tar -xf "remote_#{@file_name}")
-      run_command %(cd ~ && wget -O "remote_#{@file_name}.sha2" "https://#{@bucket_name}.s3.amazonaws.com/#{@file_name}.sha2")
+      run_command %(cd ~ && wget -O "remote_#{@file_name}" "#{storage[@file_name].url_for(:read)}" && tar -xf "remote_#{@file_name}")
+      run_command %(cd ~ && wget -O "remote_#{@file_name}.sha2" "#{storage[@digest_filename].url_for(:read)}")
       run_command %(bundle install --without #{ENV['BUNDLE_WITHOUT'] || "development production"} --path=~/.bundle)
     end
 
@@ -51,10 +51,10 @@ module TravisBundleCache
       `cd ~ && tar -cjf "#{@file_name}" .bundle`
 
       puts "=> Uploading the bundle"
-      storage[@file_name].write(Pathname.new(@file_path), :acl => :public_read, :reduced_redundancy => true)
+      storage[@file_name].write(Pathname.new(@file_path), :reduced_redundancy => true)
 
       puts "=> Uploading the digest file"
-      storage[@digest_filename].write(@bundle_digest, :content_type => "text/plain", :acl => :public_read, :reduced_redundancy => true)
+      storage[@digest_filename].write(@bundle_digest, :content_type => "text/plain", :reduced_redundancy => true)
 
       puts "All done now."
     end
