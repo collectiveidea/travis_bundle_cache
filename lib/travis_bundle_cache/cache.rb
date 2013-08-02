@@ -51,10 +51,10 @@ module TravisBundleCache
       `cd ~ && tar -cjf "#{@file_name}" .bundle`
 
       puts "=> Uploading the bundle"
-      storage[@file_name].write(Pathname.new(@file_path), :acl => :public_read)
+      storage[@file_name].write(Pathname.new(@file_path), :acl => :public_read, :reduced_redundancy => true)
 
       puts "=> Uploading the digest file"
-      storage[@digest_filename].write(@bundle_digest, :content_type => "text/plain", :acl => :public_read)
+      storage[@digest_filename].write(@bundle_digest, :content_type => "text/plain", :acl => :public_read, :reduced_redundancy => true)
 
       puts "All done now."
     end
