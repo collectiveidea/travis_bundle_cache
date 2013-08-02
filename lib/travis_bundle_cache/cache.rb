@@ -1,5 +1,5 @@
 require "digest"
-require "fog"
+require "aws/s3"
 
 module TravisBundleCache
   class Cache
@@ -48,41 +48,13 @@ module TravisBundleCache
       end
 
       puts "=> Preparing bundle archive"
-      `cd ~ && tar -cjf "#{@file_name}" .bundle && split -b 5m -a 3 "#{@file_name}" "#{@file_name}."`
-
-      parts_pattern = File.expand_path(File.join("~", "#{@file_name}.*"))
-      parts         = Dir.glob(parts_pattern).sort
+      `cd ~ && tar -cjf "#{@file_name}" .bundle`
 
       puts "=> Uploading the bundle"
-      puts "  => Beginning multipart upload"
-      response  = storage.initiate_multipart_upload(@bucket_name, @file_name, { "x-amz-acl" => "public-read" })
-      upload_id = response.body['UploadId']
-      puts "    => Upload ID: #{upload_id}"
-
-      part_ids = []
-
-      puts "  => Uploading #{parts.length} parts"
-      parts.each_with_index do |part, index|
-        part_number = (index + 1).to_s
-        puts "    => Uploading #{part}"
-        File.open(part) do |part_file|
-          response = storage.upload_part(@bucket_name, @file_name, upload_id, part_number, part_file)
-          part_ids << response.headers['ETag']
-          puts "      => Uploaded"
-        end
-      end
-
-      puts "  => Completing multipart upload"
-      storage.complete_multipart_upload(@bucket_name, @file_name, upload_id, part_ids)
+      storage[@file_name].write(Pathname.new(@file_path), :acl => :public_read)
 
       puts "=> Uploading the digest file"
-      bucket = storage.directories.new(key: @bucket_name)
-      bucket.files.create({
-        :body         => @bundle_digest,
-        :key          => @digest_filename,
-        :public       => true,
-        :content_type => "text/plain"
-      })
+      storage[@digest_filename].write(@bundle_digest, :content_type => "text/plain", :acl => :public_read)
 
       puts "All done now."
     end
@@ -100,12 +72,11 @@ module TravisBundleCache
     end
 
     def storage
-      @storage ||= Fog::Storage.new({
-        :provider              => "AWS",
-        :aws_access_key_id     => ENV["AWS_S3_KEY"],
-        :aws_secret_access_key => ENV["AWS_S3_SECRET"],
-        :region                => ENV["AWS_S3_REGION"] || "us-east-1"
-      })
+      @storage ||= AWS::S3.new({
+        :access_key_id     => ENV["AWS_S3_KEY"],
+        :secret_access_key => ENV["AWS_S3_SECRET"],
+        :region            => ENV["AWS_S3_REGION"] || "us-east-1"
+      }).buckets[@bucket_name].objects
     end
   end
 end

@@ -20,5 +20,5 @@ Gem::Specification.new do |spec|
   spec.executables   = ["travis_bundle_cache", "travis_bundle_install"]
 
   spec.add_dependency "bundler", "~> 1.3"
-  spec.add_dependency "fog"
+  spec.add_dependency "aws-sdk"
 end
