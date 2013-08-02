@@ -30,7 +30,7 @@ describe TravisBundleCache::Cache do
     end
 
     it 'installs the bundle' do
-      expect(@cache).to receive(:run_command).once.with("bundle install --without development production --path=~\/.bundle")
+      expect(@cache).to receive(:run_command).once.with("bundle install --without development production --path=~\/.bundle", retry: true)
 
       @cache.install
     end
@@ -106,7 +106,7 @@ describe TravisBundleCache::Cache do
     end
 
     it 'archives the current bundle directory' do
-      expect(@cache).to receive(:run_command).with(%{cd ~ && tar -cjf "owner-repo-#{@uname}.tgz" .bundle})
+      expect(@cache).to receive(:run_command).with(%{cd ~ && tar -cjf "owner-repo-#{@uname}.tgz" .bundle}, exit_on_error: true)
 
       @cache.archive_and_upload_bundle
     end

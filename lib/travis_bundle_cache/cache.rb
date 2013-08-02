@@ -16,7 +16,7 @@ module TravisBundleCache
     def install
       run_command %(cd ~ && wget -O "remote_#{@file_name}" "#{storage[@file_name].url_for(:read)}" && tar -xf "remote_#{@file_name}")
       run_command %(cd ~ && wget -O "remote_#{@file_name}.sha2" "#{storage[@digest_filename].url_for(:read)}")
-      run_command %(bundle install --without #{ENV['BUNDLE_WITHOUT'] || "development production"} --path=~/.bundle)
+      run_command %(bundle install --without #{ENV['BUNDLE_WITHOUT'] || "development production"} --path=~/.bundle), retry: true
     end
 
     def cache_bundle
@@ -48,7 +48,7 @@ module TravisBundleCache
       end
 
       puts "=> Preparing bundle archive"
-      run_command %(cd ~ && tar -cjf "#{@file_name}" .bundle)
+      run_command %(cd ~ && tar -cjf "#{@file_name}" .bundle), exit_on_error: true
 
       puts "=> Uploading the bundle"
       storage[@file_name].write(Pathname.new(@file_path), :reduced_redundancy => true)
@@ -61,12 +61,26 @@ module TravisBundleCache
 
     protected
 
-    def run_command(cmd)
+    def run_command(cmd, opts = {})
+      tries = 1
       puts "Running: #{cmd}"
-      IO.popen(cmd) do |f|
-        begin
-          print f.readchar while true
-        rescue EOFError
+      while true
+        IO.popen(cmd) do |f|
+          begin
+            print f.readchar while true
+          rescue EOFError
+          end
+        end
+
+        if $?.exitstatus == 0
+          break
+        elsif opts[:retry] && tries < 3
+          tries += 1
+          puts "Retrying attempt #{tries} of 3"
+        elsif opts[:exit_on_error] || opts[:retry]
+          exit($?.exitstatus)
+        else
+          break
         end
       end
     end
