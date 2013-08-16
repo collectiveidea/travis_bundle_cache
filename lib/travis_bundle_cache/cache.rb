@@ -6,7 +6,7 @@ module TravisBundleCache
     def initialize
       @architecture        = `uname -m`.strip
       @bundle_archive      = ENV['BUNDLE_ARCHIVE'] || ENV['TRAVIS_REPO_SLUG'].gsub(/\//, '-')
-      @file_name           = "#{@bundle_archive}-#{@architecture}.tgz"
+      @file_name           = "#{@bundle_archive}-#{@architecture}-#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}.tgz"
       @file_path           = File.expand_path("~/#{@file_name}")
       @lock_file           = File.join(File.expand_path(ENV["TRAVIS_BUILD_DIR"]), "Gemfile.lock")
       @digest_filename     = "#{@file_name}.sha2"

@@ -9,6 +9,7 @@ describe TravisBundleCache::Cache do
     ENV["AWS_S3_BUCKET"]       = "a-bucket-name"
 
     @uname = `uname -m`.strip
+    @ruby_version = "#{RUBY_VERSION}p#{RUBY_PATCHLEVEL}"
     @cache = TravisBundleCache::Cache.new
   end
 
@@ -18,13 +19,13 @@ describe TravisBundleCache::Cache do
     end
 
     it 'tries to download an available bundle archive' do
-      expect(@cache).to receive(:run_command).once.with(/\Acd ~ && wget -O "remote_owner-repo-#{@uname}\.tgz" "https:\/\/a-bucket-name\.s3\.amazonaws\.com\/owner-repo-#{@uname}.tgz\?AWSAccessKeyId=AN_ACCESS_KEY_ID&Expires=[0-9]+&Signature=[^"]+" && tar -xf "remote_owner-repo-#{@uname}\.tgz"\Z/)
+      expect(@cache).to receive(:run_command).once.with(/\Acd ~ && wget -O "remote_owner-repo-#{@uname}-#{@ruby_version}\.tgz" "https:\/\/a-bucket-name\.s3\.amazonaws\.com\/owner-repo-#{@uname}-#{@ruby_version}.tgz\?AWSAccessKeyId=AN_ACCESS_KEY_ID&Expires=[0-9]+&Signature=[^"]+" && tar -xf "remote_owner-repo-#{@uname}-#{@ruby_version}\.tgz"\Z/)
 
       @cache.install
     end
 
     it 'tries to download an available bundle archive signature' do
-      expect(@cache).to receive(:run_command).once.with(/\Acd ~ && wget -O "remote_owner-repo-#{@uname}\.tgz.sha2" "https:\/\/a-bucket-name\.s3\.amazonaws\.com\/owner-repo-#{@uname}.tgz.sha2\?AWSAccessKeyId=AN_ACCESS_KEY_ID&Expires=[0-9]+&Signature=[^"]+"\Z/)
+      expect(@cache).to receive(:run_command).once.with(/\Acd ~ && wget -O "remote_owner-repo-#{@uname}-#{@ruby_version}\.tgz.sha2" "https:\/\/a-bucket-name\.s3\.amazonaws\.com\/owner-repo-#{@uname}-#{@ruby_version}.tgz.sha2\?AWSAccessKeyId=AN_ACCESS_KEY_ID&Expires=[0-9]+&Signature=[^"]+"\Z/)
 
       @cache.install
     end
@@ -57,7 +58,7 @@ describe TravisBundleCache::Cache do
 
     it 'builds a new archive if the sha has changed' do
       FileUtils.mkdir_p("~/")
-      File.open(File.expand_path("~/remote_owner-repo-#{@uname}.tgz.sha2"), 'w') {|f| f.print "old sha hash" }
+      File.open(File.expand_path("~/remote_owner-repo-#{@uname}-#{@ruby_version}.tgz.sha2"), 'w') {|f| f.print "old sha hash" }
       expect(@cache).to receive(:archive_and_upload_bundle).once.with(no_args)
 
       @cache.cache_bundle
@@ -65,7 +66,7 @@ describe TravisBundleCache::Cache do
 
     it 'does not build a new archive if the sha matches' do
       FileUtils.mkdir_p("~/")
-      File.open(File.expand_path("~/remote_owner-repo-#{@uname}.tgz.sha2"), 'w') {|f| f.print "be7b966bd555fffd27c11f2557484501ad2ed482f1b6164457433800e163ae29" }
+      File.open(File.expand_path("~/remote_owner-repo-#{@uname}-#{@ruby_version}.tgz.sha2"), 'w') {|f| f.print "be7b966bd555fffd27c11f2557484501ad2ed482f1b6164457433800e163ae29" }
       expect(@cache).to receive(:archive_and_upload_bundle).never
       expect(@cache).to receive(:puts).with("=> There were no changes, doing nothing")
 
@@ -106,20 +107,20 @@ describe TravisBundleCache::Cache do
     end
 
     it 'archives the current bundle directory' do
-      expect(@cache).to receive(:run_command).with(%{cd ~ && tar -cjf "owner-repo-#{@uname}.tgz" .bundle}, exit_on_error: true)
+      expect(@cache).to receive(:run_command).with(%{cd ~ && tar -cjf "owner-repo-#{@uname}-#{@ruby_version}.tgz" .bundle}, exit_on_error: true)
 
       @cache.archive_and_upload_bundle
     end
 
     it 'sends the correct files to S3' do
       storage = {
-        "owner-repo-#{@uname}.tgz"      => double(AWS::S3::S3Object),
-        "owner-repo-#{@uname}.tgz.sha2" => double(AWS::S3::S3Object)
+        "owner-repo-#{@uname}-#{@ruby_version}.tgz"      => double(AWS::S3::S3Object),
+        "owner-repo-#{@uname}-#{@ruby_version}.tgz.sha2" => double(AWS::S3::S3Object)
       }
       @cache.stub(:storage).and_return(storage)
 
-      expect(storage["owner-repo-#{@uname}.tgz"]).to receive(:write).with(Pathname.new(File.expand_path("~/owner-repo-#{@uname}.tgz")), reduced_redundancy: true)
-      expect(storage["owner-repo-#{@uname}.tgz.sha2"]).to receive(:write).with("be7b966bd555fffd27c11f2557484501ad2ed482f1b6164457433800e163ae29", content_type: 'text/plain', reduced_redundancy: true)
+      expect(storage["owner-repo-#{@uname}-#{@ruby_version}.tgz"]).to receive(:write).with(Pathname.new(File.expand_path("~/owner-repo-#{@uname}-#{@ruby_version}.tgz")), reduced_redundancy: true)
+      expect(storage["owner-repo-#{@uname}-#{@ruby_version}.tgz.sha2"]).to receive(:write).with("be7b966bd555fffd27c11f2557484501ad2ed482f1b6164457433800e163ae29", content_type: 'text/plain', reduced_redundancy: true)
 
       @cache.archive_and_upload_bundle
     end
